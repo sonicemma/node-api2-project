@@ -62,7 +62,19 @@ router.post('/', (req, res) => {
 })
 
 router.post('/:id/comments', (req, res) => {
-
+    if(!req.body.text) {
+        res.status(400).json({message: 'No comment text'})
+    } else {
+        Posts.findById(req.params.id)
+        .then(post => {
+            if (post.length) {
+                Posts.insertComment(req.body, req.params.id)
+                res.status(201).json(comment)
+            } else {
+                res.status(404).json({message: 'Post not found'})
+            }
+        })
+    }
 })
 
 router.put('/:id', (req, res) => {
