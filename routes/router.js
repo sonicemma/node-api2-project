@@ -78,11 +78,51 @@ router.post('/:id/comments', (req, res) => {
 })
 
 router.put('/:id', (req, res) => {
-    
+    const id = req.params.id;
+    const update = req.body;
+    if (!req.body.title || !req.body.contents) {
+        res.status(400).json({message: 'Missing title / content'})
+    } else {
+        Posts.findById(id)
+        .then(post => {
+            if (post.length) {
+                try {
+                    Posts.update(id, update)
+                    .then(count => {
+                        if(count > 0) {
+                            res.status(200).json(update)
+                        }
+                    })
+                } 
+                catch(error) {
+                    console.log(error.message, err)
+                    res.status(500).json({message: 'Post failed to remove'})
+                }
+            } else {
+                res.status(404).json({message: 'Post not found'})
+            }
+        }
+    )}
 })
 
 router.delete('/:id', (req, res) => {
-    
+    const id = req.params.id;
+    Posts.findById(id)
+    .then(post => {
+        if (post.length) {
+            try {
+                Posts.remove(id)
+                .then(nil => {
+                    res.status(200).json(post)
+                })
+            }
+            catch(error) {
+                res.status(500).json({message: 'Post failed to remove'})
+            }
+        } else {
+            res.status(400).json({message: 'Post not found'})
+        }
+    })
 })
 
 
